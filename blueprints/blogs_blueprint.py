@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint,request,make_response
 from models import *
 
 auth_blueprint = Blueprint("auth_blueprint", __name__)
@@ -10,7 +10,7 @@ def blogs():
         try:
             new_blog = Blog(
                 title=request.json.get("title"),
-                content=request.json.get("content")  # Assume content field exists
+                content=request.json.get("content")  
             )
             db.session.add(new_blog)
             db.session.commit()

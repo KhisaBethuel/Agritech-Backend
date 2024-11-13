@@ -1,10 +1,10 @@
-from flask import Blueprint
+from flask import Blueprint,request,make_response
 from models import *
 
-auth_blueprint = Blueprint("auth_blueprint", __name__)
+expert_blueprint = Blueprint("experts_blueprint", __name__)
 
 # CRUD Operations for Experts
-@app.route('/experts', methods=['GET', 'POST'])
+@expert_blueprint.route('/experts', methods=['GET', 'POST'])
 def experts():
     if request.method == 'POST':
         try:
@@ -29,7 +29,7 @@ def experts():
             return make_response({"message" : "No expert"}, )
         
 
-@app.route('/experts/<int:expert_id>', methods=['GET', 'PUT', 'DELETE'])
+@expert_blueprint.route('/experts/<int:expert_id>', methods=['GET', 'PUT', 'DELETE'])
 def expert(expert_id):
     expert = Expert.query.get(expert_id)
     if not expert:

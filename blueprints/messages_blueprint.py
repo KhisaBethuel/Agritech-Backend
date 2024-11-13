@@ -1,12 +1,12 @@
-from flask import Blueprint
+from flask import Blueprint,request,make_response
 from models import *
 
 
-auth_blueprint = Blueprint("auth_blueprint", __name__)
+message_blueprint = Blueprint("message_blueprint", __name__)
 
 
 # CRUD Operations for Messages
-@app.route('/messages', methods=['GET', 'POST'])
+@message_blueprint.route('/messages', methods=['GET', 'POST'])
 def messages():
     if request.method == 'POST':
         try:
@@ -25,7 +25,7 @@ def messages():
         messages = [message.to_dict() for message in Message.query.all()]
         return make_response(jsonify(messages), 200)
 
-@app.route('/messages/<int:message_id>', methods=['GET', 'PUT', 'DELETE'])
+@message_blueprint.route('/messages/<int:message_id>', methods=['GET', 'PUT', 'DELETE'])
 def message(message_id):
     message = Message.query.get(message_id)
     if not message:

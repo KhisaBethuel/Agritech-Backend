@@ -5,7 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token, create_refresh_t
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from auth import auth_blueprint
+from blueprints.auth import auth_blueprint
 
 load_dotenv()
 
