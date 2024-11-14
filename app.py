@@ -1,7 +1,7 @@
 from flask import Flask, make_response, request, jsonify, Blueprint
 from flask_migrate import Migrate
 from models import *
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os

@@ -1,10 +1,12 @@
 from flask import Blueprint,request,make_response
 from models import *
+from flask_jwt_extended import jwt_required
 
 auth_blueprint = Blueprint("auth_blueprint", __name__)
 
 # CRUD Operations for Likes
 @app.route('/likes', methods=['POST'])
+@jwt_required()
 def create_like():
     try:
         new_like = Like(

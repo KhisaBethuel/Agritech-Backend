@@ -1,5 +1,6 @@
 from flask import Blueprint,request,make_response
 from models import *
+from flask_jwt_extended import jwt_required
 
 expert_blueprint = Blueprint("experts_blueprint", __name__)
 
@@ -30,6 +31,7 @@ def experts():
         
 
 @expert_blueprint.route('/experts/<int:expert_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def expert(expert_id):
     expert = Expert.query.get(expert_id)
     if not expert:

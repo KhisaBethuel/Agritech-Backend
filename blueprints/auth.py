@@ -1,4 +1,7 @@
 from flask import Blueprint,request,make_response
+from flask_jwt_extended import create_access_token, create_refresh_token
+from models import *
+from flask_jwt_extended import jwt_required
 
 auth_blueprint = Blueprint("auth_blueprint", __name__)
 
@@ -8,11 +11,11 @@ def auth():
 
 
 # 1. Signup Route
-@app.route('/signup', methods=['POST'])
+@auth_blueprint.route('/signup', methods=['POST'])
 def signup():
     try:
         # Create a new user
-        new_user = Signup(
+        new_user = User(
             username=request.json.get("username"),
             password=request.json.get("password")
         )
@@ -36,11 +39,11 @@ def signup():
         return make_response({"errors": ["Signup failed"]}, 400)
 
 # 2. Login Route
-@app.route('/login', methods=['POST'])
+@auth_blueprint.route('/login', methods=['POST'])
 def login():
     try:
         # Authenticate user
-        user = Login.query.filter_by(username=request.json.get("username")).first()
+        user = User.query.filter_by(username=request.json.get("username")).first()
         if user and user.check_password(request.json.get("password")):
             access_token = create_access_token(identity=user.id)
             refresh_token = create_refresh_token(identity=user.id)
@@ -57,3 +60,8 @@ def login():
     except Exception as e:
         print(e)  # Logging for debugging
         return make_response({"errors": ["Login failed"]}, 400)
+    
+@auth_blueprint.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    return make_response({"message": "Logout successful"}, 200)

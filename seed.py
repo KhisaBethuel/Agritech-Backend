@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 from app import app
 from models import db, User, Blog, Expert, Community, Message, Comment, Like
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash
+
+utc_now = datetime.now(timezone.utc)
 
 with app.app_context():
     # Delete existing data to prevent duplicates
@@ -16,14 +18,14 @@ with app.app_context():
     User.query.delete()
 
     print("Creating users...")
-    alice = User(username="alice", email="alice@example.com", bio="Tech Enthusiast", profile_picture="profile1.jpg", password_hash=generate_password_hash("password123"))
-    bob = User(username="bob", email="bob@example.com", bio="AI Expert", profile_picture="profile2.jpg", password_hash=generate_password_hash("password123"))
-    charlie = User(username="charlie", email="charlie@example.com", bio="Writer", profile_picture="profile3.jpg", password_hash=generate_password_hash("password123"))
+    alice = User(username="alice", email="alice@example.com", password_hash=generate_password_hash("password123"))
+    bob = User(username="bob", email="bob@example.com", password_hash=generate_password_hash("password123"))
+    charlie = User(username="charlie", email="charlie@example.com", password_hash=generate_password_hash("password123"))
     users = [alice, bob, charlie]
 
     print("Creating blogs...")
-    blog1 = Blog(title="Tech Trends in 2024", content="The latest trends in technology...", created_at=datetime.utcnow(), user=alice)
-    blog2 = Blog(title="AI for Healthcare", content="How AI is transforming healthcare...", created_at=datetime.utcnow(), user=bob)
+    blog1 = Blog(title="Tech Trends in 2024", content="The latest trends in technology...", created_at=utc_now, user=alice)
+    blog2 = Blog(title="AI for Healthcare", content="How AI is transforming healthcare...", created_at=utc_now, user=bob)
     blogs = [blog1, blog2]
 
     print("Creating experts...")
@@ -32,13 +34,13 @@ with app.app_context():
     experts = [expert1, expert2]
 
     print("Creating communities...")
-    community1 = Community(description="Tech Enthusiasts", created_at=datetime.utcnow(), user=alice)
-    community2 = Community(description="AI Experts", created_at=datetime.utcnow(), user=bob)
+    community1 = Community(description="Tech Enthusiasts", created_at=utc_now, user=alice)
+    community2 = Community(description="AI Experts", created_at=utc_now, user=bob)
     communities = [community1, community2]
 
     print("Creating comments...")
-    comment1 = Comment(content="Great post, thanks for sharing!", created_at=datetime.utcnow(), user=charlie, blog=blog1)
-    comment2 = Comment(content="Very informative, I agree with your points!", created_at=datetime.utcnow(), user=alice, blog=blog2)
+    comment1 = Comment(content="Great post, thanks for sharing!", created_at=utc_now, user=charlie, blog=blog1)
+    comment2 = Comment(content="Very informative, I agree with your points!", created_at=utc_now, user=alice, blog=blog2)
     comments = [comment1, comment2]
 
     print("Creating likes...")
