@@ -12,7 +12,7 @@ def blogs():
         try:
             new_blog = Blog(
                 title=request.json.get("title"),
-                image=request.json.get("image")
+                image=request.json.get("image"),
                 content=request.json.get("content")  
             )
             db.session.add(new_blog)

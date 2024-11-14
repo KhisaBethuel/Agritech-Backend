@@ -13,9 +13,9 @@ def messages():
     return make_response(jsonify(messages), 200)
     
     
-@message_blueprint.route('/messages', methods=['POST'])
+@message_blueprint.route('/message', methods=['POST'])
 @jwt_required()
-def message():
+def post_message():
     try:
         new_message = Message(
             content=request.json.get("content"),
