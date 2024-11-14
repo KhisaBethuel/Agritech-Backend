@@ -1,11 +1,13 @@
 from flask import Blueprint,request,make_response
 from models import *
+from flask_jwt_extended import jwt_required
 
-auth_blueprint = Blueprint("auth_blueprint", __name__)
+communities_bp = Blueprint("communities_bp", __name__)
 
 
 # CRUD Operations for Communities
-@app.route('/communities', methods=['GET', 'POST'])
+@communities_bp.route('/communities', methods=['GET', 'POST'])
+@jwt_required()
 def communities():
     if request.method == 'POST':
         try:
@@ -23,7 +25,8 @@ def communities():
         communities = [community.to_dict() for community in Community.query.all()]
         return make_response(jsonify(communities), 200)
 
-@app.route('/communities/<int:community_id>', methods=['GET', 'PUT', 'DELETE'])
+@communities_bp.route('/communities/<int:community_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def community(community_id):
     community = Community.query.get(community_id)
     if not community:

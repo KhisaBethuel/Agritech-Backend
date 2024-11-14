@@ -1,11 +1,17 @@
 from flask import Flask, make_response, request, jsonify, Blueprint
 from flask_migrate import Migrate
 from models import *
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from blueprints.auth import auth_blueprint
+from blueprints.blogs_blueprint import blogs_bp
+from blueprints.comments_blueprint import comments_bp 
+from blueprints.communities import communities_bp
+from blueprints.experts_blue import expert_blueprint 
+from blueprints.likes_blue import likes_bp
+from blueprints.messages_blueprint import message_blueprint
 
 load_dotenv()
 
@@ -27,6 +33,13 @@ CORS(app)
 #     return {"message": "Debugging"}
 
 app.register_blueprint(auth_blueprint)
+app.register_blueprint(blogs_bp)
+app.register_blueprint(comments_bp)
+app.register_blueprint(communities_bp)
+app.register_blueprint(expert_blueprint)
+app.register_blueprint(likes_bp)
+app.register_blueprint(message_blueprint)
+
 
 
 if __name__ == "__main__":

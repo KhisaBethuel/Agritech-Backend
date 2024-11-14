@@ -1,10 +1,12 @@
 from flask import Blueprint,request,make_response
 from models import *
+from flask_jwt_extended import jwt_required
 
-auth_blueprint = Blueprint("auth_blueprint", __name__)
+likes_bp = Blueprint("likes_bp", __name__)
 
 # CRUD Operations for Likes
-@app.route('/likes', methods=['POST'])
+@likes_bp.route('/likes', methods=['POST'])
+@jwt_required()
 def create_like():
     try:
         new_like = Like(
@@ -17,7 +19,8 @@ def create_like():
     except Exception as e:
         return make_response({"errors": ["Failed to create like"]}, 400)
 
-@app.route('/likes/<int:like_id>', methods=['DELETE'])
+@likes_bp.route('/likes/<int:like_id>', methods=['DELETE'])
+@jwt_required()
 def delete_like(like_id):
     like = Like.query.get(like_id)
     if not like:

@@ -1,12 +1,14 @@
 from flask import Blueprint,request,make_response
 from models import *
+from flask_jwt_extended import jwt_required
 
-auth_blueprint = Blueprint("auth_blueprint", __name__)
+comments_bp = Blueprint("comments_bp", __name__)
 
 
 
 # CRUD Operations for Comments
-@app.route('/comments', methods=['GET', 'POST'])
+@comments_bp.route('/comments', methods=['GET', 'POST'])
+@jwt_required()
 def comments():
     if request.method == 'POST':
         try:
@@ -22,10 +24,11 @@ def comments():
             return make_response({"errors": ["Failed to create comment"]}, 400)
 
     elif request.method == 'GET':
-        comments = [comment.to_dict() for comment in Comment.query.all()]
+        comments = {comment.to_dict() for comment in Comment.query.all()}
         return make_response(jsonify(comments), 200)
 
-@app.route('/comments/<int:comment_id>', methods=['GET', 'PUT', 'DELETE'])
+@comments_bp.route('/comments/<int:comment_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def comment(comment_id):
     comment = Comment.query.get(comment_id)
     if not comment:

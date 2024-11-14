@@ -1,15 +1,18 @@
 from flask import Blueprint,request,make_response
 from models import *
+from flask_jwt_extended import jwt_required
 
-auth_blueprint = Blueprint("auth_blueprint", __name__)
+blogs_bp = Blueprint("blogs_bp", __name__)
 
 # 3. CRUD Operations for Blogs
-@app.route('/blogs', methods=['GET', 'POST'])
+@blogs_bp.route('/blogs', methods=['GET', 'POST'])
+@jwt_required()
 def blogs():
     if request.method == 'POST':
         try:
             new_blog = Blog(
                 title=request.json.get("title"),
+                image=request.json.get("image"),
                 content=request.json.get("content")  
             )
             db.session.add(new_blog)
@@ -22,10 +25,11 @@ def blogs():
             return make_response({"errors": ["Failed to create blog"]}, 400)
 
     elif request.method == 'GET':
-        blogs = [blog.to_dict() for blog in Blog.query.all()]
+        blogs = {blog.to_dict() for blog in Blog.query.all()}
         return make_response(jsonify(blogs), 200)
 
-@app.route('/blogs/<int:blog_id>', methods=['GET', 'PUT', 'DELETE'])
+@blogs_bp.route('/blogs/<int:blog_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def blog(blog_id):
     blog = Blog.query.get(blog_id)
     if blog is None:
@@ -38,6 +42,7 @@ def blog(blog_id):
         try:
             data = request.get_json()
             blog.title = data.get("title", blog.title)
+            blog.image = data.get("image",blog.image)
             blog.content = data.get("content", blog.content)
             db.session.commit()
             return make_response(blog.to_dict(), 200)
