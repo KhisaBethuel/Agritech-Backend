@@ -1,33 +1,43 @@
-from flask import Blueprint,request,make_response
+from flask import Blueprint,request,make_response, jsonify
 from models import *
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 blogs_bp = Blueprint("blogs_bp", __name__)
 
-# 3. CRUD Operations for Blogs
+# 3. CRUD Operations for Blog
+
 @blogs_bp.route('/blogs', methods=['GET', 'POST'])
 @jwt_required()
 def blogs():
     if request.method == 'POST':
         try:
+            user_id = get_jwt_identity()
+            if not user_id:
+                return make_response({"errors": ["User not authenticated"]}, 401)
+
             new_blog = Blog(
                 title=request.json.get("title"),
                 image=request.json.get("image"),
-                content=request.json.get("content")  
+                content=request.json.get("content"),
+                user_id=user_id,
+                created_at=datetime.utcnow()  
             )
+
             db.session.add(new_blog)
             db.session.commit()
 
+            
             response_body = new_blog.to_dict()
             return make_response(response_body, 201)
+
         except Exception as e:
-            print(e)  # Logging for debugging
+            print(e)
             return make_response({"errors": ["Failed to create blog"]}, 400)
 
     elif request.method == 'GET':
-        blogs = {blog.to_dict() for blog in Blog.query.all()}
+        blogs = [blog.to_dict() for blog in Blog.query.all()]
         return make_response(jsonify(blogs), 200)
-
+    
 @blogs_bp.route('/blogs/<int:blog_id>', methods=['GET', 'PUT', 'DELETE'])
 @jwt_required()
 def blog(blog_id):
@@ -42,13 +52,13 @@ def blog(blog_id):
         try:
             data = request.get_json()
             blog.title = data.get("title", blog.title)
-            blog.image = data.get("image",blog.image)
+            blog.image = data.get("image", blog.image)
             blog.content = data.get("content", blog.content)
             db.session.commit()
             return make_response(blog.to_dict(), 200)
         except Exception as e:
-            print(e)  
-            return make_response({"errors": ["Failed to update blog"]}, 400)
+            print(f"Error: {str(e)}")
+            return make_response({"errors": [str(e)]}, 400)
 
     elif request.method == 'DELETE':
         try:
@@ -56,5 +66,5 @@ def blog(blog_id):
             db.session.commit()
             return make_response({"message": "Blog deleted successfully"}, 204)
         except Exception as e:
-            print(e)  
-            return make_response({"errors": ["Failed to delete blog"]}, 400)
+            print(f"Error: {str(e)}")
+            return make_response({"errors": [str(e)]}, 400)
