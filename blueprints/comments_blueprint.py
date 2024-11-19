@@ -33,7 +33,6 @@ def post_comment():
 
 
 @comments_bp.route('/comments/<int:post_id>', methods=['GET'])
-@jwt_required()
 def get_comments_for_post(post_id):
     comments = Comment.query.filter_by(post_id=post_id).all()
     if not comments:
