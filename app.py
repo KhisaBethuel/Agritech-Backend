@@ -28,9 +28,6 @@ migrate = Migrate(app, db)
 jwt = JWTManager(app)
 CORS(app)
 
-# @app.route("/", methods=["GET"])
-# def index():
-#     return {"message": "Debugging"}
 
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(blogs_bp)

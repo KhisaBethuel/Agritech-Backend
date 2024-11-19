@@ -18,9 +18,12 @@ with app.app_context():
     User.query.delete()
 
     print("Creating users...")
-    alice = User(username="alice", email="alice@example.com", password_hash=generate_password_hash("password123"))
-    bob = User(username="bob", email="bob@example.com", password_hash=generate_password_hash("password123"))
-    charlie = User(username="charlie", email="charlie@example.com", password_hash=generate_password_hash("password123"))
+    alice = User(username="alice", email="alice@example.com")
+    alice.set_password("password123")
+    bob = User(username="bob", email="bob@example.com")
+    bob.set_password("password123")
+    charlie = User(username="charlie", email="charlie@example.com")
+    charlie.set_password("password123")
     users = [alice, bob, charlie]
 
     print("Creating blogs...")
@@ -34,8 +37,8 @@ with app.app_context():
     experts = [expert1, expert2]
 
     print("Creating communities...")
-    community1 = Community(description="Tech Enthusiasts", created_at=utc_now, user=alice)
-    community2 = Community(description="AI Experts", created_at=utc_now, user=bob)
+    community1 = Community(name= "Techies group", description="Tech Enthusiasts", created_at=utc_now, user=alice)
+    community2 = Community(name= "Ai experts", description="AI Experts", created_at=utc_now, user=bob)
     communities = [community1, community2]
 
     print("Creating comments...")
