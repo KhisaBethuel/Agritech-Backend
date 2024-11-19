@@ -6,37 +6,39 @@ blogs_bp = Blueprint("blogs_bp", __name__)
 
 # 3. CRUD Operations for Blog
 
-@blogs_bp.route('/blogs', methods=['GET', 'POST'])
+@blogs_bp.route('/blogs', methods=['GET'])
+def get_blogs():
+    blogs = [blog.to_dict() for blog in Blog.query.all()]
+    return make_response(jsonify(blogs), 200)
+
+@blogs_bp.route('/blogs', methods=['POST'])
 @jwt_required()
-def blogs():
-    if request.method == 'POST':
-        try:
-            user_id = get_jwt_identity()
-            if not user_id:
-                return make_response({"errors": ["User not authenticated"]}, 401)
+def create_blog():
+    """
+    Handles creating a new blog. Requires user authentication.
+    """
+    try:
+        user_id = get_jwt_identity()
+        if not user_id:
+            return make_response({"errors": ["User not authenticated"]}, 401)
 
-            new_blog = Blog(
-                title=request.json.get("title"),
-                image=request.json.get("image"),
-                content=request.json.get("content"),
-                user_id=user_id,
-                created_at=datetime.utcnow()  
-            )
+        new_blog = Blog(
+            title=request.json.get("title"),
+            image=request.json.get("image"),
+            content=request.json.get("content"),
+            user_id=user_id,
+            created_at=datetime.utcnow()
+        )
 
-            db.session.add(new_blog)
-            db.session.commit()
+        db.session.add(new_blog)
+        db.session.commit()
 
-            
-            response_body = new_blog.to_dict()
-            return make_response(response_body, 201)
+        response_body = new_blog.to_dict()
+        return make_response(response_body, 201)
 
-        except Exception as e:
-            print(e)
-            return make_response({"errors": ["Failed to create blog"]}, 400)
-
-    elif request.method == 'GET':
-        blogs = [blog.to_dict() for blog in Blog.query.all()]
-        return make_response(jsonify(blogs), 200)
+    except Exception as e:
+        print(e)
+        return make_response({"errors": ["Failed to create blog"]}, 400)
     
 @blogs_bp.route('/blogs/<int:blog_id>', methods=['GET', 'PUT', 'DELETE'])
 @jwt_required()
