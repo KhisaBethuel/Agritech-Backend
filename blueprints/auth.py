@@ -44,24 +44,25 @@ def signup():
 @auth_blueprint.route('/login', methods=['POST'])
 def login():
     try:
-        # Authenticate user
-        user = User.query.filter_by(username=request.json.get("username")).first()
-        if user and user.check_password(request.json.get("password")):
+        email = request.json.get('email')
+        password = request.json.get('password')
+        user = User.query.filter_by(email=email).first()
+        if user and user.check_password(password):
             access_token = create_access_token(identity=user.id)
             refresh_token = create_refresh_token(identity=user.id)
 
             response_body = {
-                "access token" : access_token,
-                "refresh token" : refresh_token
+                "access token": access_token,
+                "refresh token": refresh_token
             }
             return make_response(response_body, 200)
 
         return make_response({"errors": ["Invalid credentials"]}, 401)
 
     except Exception as e:
-        print(e)  # Logging for debugging
+        print(e)
         return make_response({"errors": ["Login failed"]}, 400)
-    
+
 @auth_blueprint.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
