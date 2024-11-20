@@ -1,8 +1,8 @@
-"""Initial migration
+"""Initial Migration
 
-Revision ID: a2fccf0c6aae
+Revision ID: 8fa0bdb4b507
 Revises: 
-Create Date: 2024-11-19 23:28:41.373703
+Create Date: 2024-11-20 22:31:11.635209
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a2fccf0c6aae'
+revision = '8fa0bdb4b507'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -58,6 +58,13 @@ def upgrade():
     sa.ForeignKeyConstraint(['sender_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('user_follows',
+    sa.Column('follower_id', sa.Integer(), nullable=False),
+    sa.Column('followed_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['followed_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['follower_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('follower_id', 'followed_id')
+    )
     op.create_table('blogs',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=120), nullable=False),
@@ -69,6 +76,13 @@ def upgrade():
     sa.ForeignKeyConstraint(['expert_id'], ['experts.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('expert_follows',
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('expert_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['expert_id'], ['experts.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('user_id', 'expert_id')
     )
     op.create_table('user_community',
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -104,7 +118,9 @@ def downgrade():
     op.drop_table('likes')
     op.drop_table('comments')
     op.drop_table('user_community')
+    op.drop_table('expert_follows')
     op.drop_table('blogs')
+    op.drop_table('user_follows')
     op.drop_table('messages')
     op.drop_table('experts')
     op.drop_table('communities')
