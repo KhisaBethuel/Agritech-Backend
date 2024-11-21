@@ -268,5 +268,40 @@ def get_following_of_expert_by_user(user_id):
         return make_response({"following_experts": experts_list}, 200)
     except Exception as e:
         return make_response({"errors": ["Failed to retrieve followed experts", str(e)]}, 500)
+    
+    
+@auth_blueprint.route('/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    try:
+        current_user_id = get_jwt_identity()
+
+        user = User.query.get(current_user_id)
+        if not user:
+            return make_response({"errors": ["User not found"]}, 404)
+
+        num_posts = Blog.query.filter_by(user_id=current_user_id).count()
+
+        num_followers = UserFollow.query.filter_by(followed_id=current_user_id).count()
+
+        num_following = UserFollow.query.filter_by(follower_id=current_user_id).count()
+
+        communities = [community.community.name for community in user.communities_joined]
+
+        profile_data = {
+            "username": user.username,
+            "bio": user.bio,
+            "profile_picture": user.profile_picture,
+            "num_posts": num_posts,
+            "num_followers": num_followers,
+            "num_following": num_following,
+            "communities_joined": communities
+        }
+
+        return make_response({"profile": profile_data}, 200)
+
+    except Exception as e:
+        return make_response({"errors": ["Failed to fetch profile", str(e)]}, 500)
+
 
 
