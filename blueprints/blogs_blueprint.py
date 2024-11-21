@@ -88,3 +88,10 @@ def blog(blog_id):
         except Exception as e:
             print(f"Error: {str(e)}")
             return make_response({"errors": [str(e)]}, 400)
+        
+@blogs_bp.route('/blogs/public/<int:blog_id>', methods=['GET'])
+def get_public_blog(blog_id):
+    blog = Blog.query.get(blog_id)
+    if blog is None:
+        return make_response({"error": "Blog not found"}, 404)
+    return make_response(blog.to_dict(), 200)
