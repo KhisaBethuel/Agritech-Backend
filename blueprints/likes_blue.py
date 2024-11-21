@@ -23,25 +23,31 @@ def create_like():
         db.session.add(new_like)
         db.session.commit()
 
-        return make_response(new_like.to_dict(), 201)
+        return make_response({"like_id": new_like.id, "likeCount": Like.query.filter_by(post_id=post_id).count()}, 201)
     except Exception as e:
         return make_response({"errors": [f"Failed to create like: {str(e)}"]}, 400)
 
 
-@likes_bp.route('/likes/<int:like_id>', methods=['DELETE'])
+@likes_bp.route('/likes', methods=['DELETE'])
 @jwt_required()
-def delete_like(like_id):
-    like = Like.query.get(like_id)
-    if not like:
-        return make_response({"error": "Like not found"}, 404)
+def delete_like():
+    try:
+        user_id = get_jwt_identity()
 
-    user_id = get_jwt_identity()
-    if like.user_id != user_id:
-        return make_response({"error": "You can only delete your own likes"}, 403)
+        post_id = request.json.get("post_id")
+        if not post_id:
+            return make_response({"error": "Post ID is required"}, 400)
 
-    db.session.delete(like)
-    db.session.commit()
-    return make_response({"message": "Like deleted successfully"}, 204)
+        like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()
+        if not like:
+            return make_response({"error": "Like not found"}, 404)
+
+        db.session.delete(like)
+        db.session.commit()
+
+        return make_response({"likeCount": Like.query.filter_by(post_id=post_id).count()}, 200)
+    except Exception as e:
+        return make_response({"errors": [f"Failed to delete like: {str(e)}"]}, 400)
 
 
 @likes_bp.route('/likes/post/<int:post_id>', methods=['GET'])

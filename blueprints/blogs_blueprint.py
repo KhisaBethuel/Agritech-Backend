@@ -6,10 +6,28 @@ blogs_bp = Blueprint("blogs_bp", __name__)
 
 # 3. CRUD Operations for Blog
 
+from flask import request, jsonify, make_response
+
 @blogs_bp.route('/blogs', methods=['GET'])
 def get_blogs():
-    blogs = [blog.to_dict() for blog in Blog.query.all()]
-    return make_response(jsonify(blogs), 200)
+    
+    page = request.args.get('page', 1, type=int)  
+    per_page = request.args.get('per_page', 6, type=int)  
+
+    blogs_query = Blog.query.paginate(page=page, per_page=per_page, error_out=False)
+
+    
+    blogs = [blog.to_dict() for blog in blogs_query.items]
+    response = {
+        'blogs': blogs,
+        'total': blogs_query.total,  
+        'page': blogs_query.page,    
+        'per_page': blogs_query.per_page,  
+        'pages': blogs_query.pages  
+    }
+
+    return make_response(jsonify(response), 200)
+
 
 @blogs_bp.route('/blogs', methods=['POST'])
 @jwt_required()
@@ -70,3 +88,10 @@ def blog(blog_id):
         except Exception as e:
             print(f"Error: {str(e)}")
             return make_response({"errors": [str(e)]}, 400)
+        
+@blogs_bp.route('/blogs/public/<int:blog_id>', methods=['GET'])
+def get_public_blog(blog_id):
+    blog = Blog.query.get(blog_id)
+    if blog is None:
+        return make_response({"error": "Blog not found"}, 404)
+    return make_response(blog.to_dict(), 200)
