@@ -121,6 +121,7 @@ class Community(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     image = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
 
     user = db.relationship('User', back_populates='communities')
     members = db.relationship('UserCommunity', back_populates='community')

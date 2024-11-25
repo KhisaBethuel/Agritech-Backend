@@ -24,6 +24,9 @@ with app.app_context():
     charlie = User(username="charlie", email="charlie@example.com")
     charlie.set_password("password123")
     users = [alice, bob, charlie]
+    
+    db.session.add_all(users)
+    db.session.commit()
 
     print("Creating blogs...")
     blogs = [
@@ -202,25 +205,100 @@ with app.app_context():
             image="https://devimpactinstitute.com/wp-content/uploads/2024/03/Agricultural-Policy-Framework-for-Development.png"
         ),
     ]
+    
+    
+    db.session.add_all(blogs)
+    db.session.commit()
 
-    print("Creating experts...")
     experts = [
-        Expert(
-            username="john_doe",
-            expertise_field="Smart Farming",
-            profile_image="https://images.unsplash.com/photo-1542838686-2291dec9e136",
-            user=bob
-        ),
-        Expert(
-            username="jane_doe",
-            expertise_field="Sustainable Agriculture",
-            profile_image="https://images.unsplash.com/photo-1510915228340-29c85a43dcfe",
-            user=alice
-        )
+    Expert(
+        username="john_doe",
+        expertise_field="Smart Farming",
+        profile_image="https://ntrepidcorp.com/wp-content/uploads/2016/06/team-1.jpg",
+        user=bob
+    ),
+    Expert(
+        username="jane_doe",
+        expertise_field="Sustainable Agriculture",
+        profile_image="https://images.unsplash.com/photo-1510915228340-29c85a43dcfe",
+        user=alice
+    ),
+    Expert(
+        username="victor_kim",
+        expertise_field="Soil Science",
+        profile_image="https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/3FD7/production/_128534361_effectedfarmer1.jpg", 
+        user=bob 
+    ),
+    Expert(
+        username="mary_kanu",
+        expertise_field="Irrigation Systems",
+        profile_image="https://images.squarespace-cdn.com/content/v1/66cc3bb9515d3e283a069e7b/1725469470829-024I7PXTJXQX0SA35BQ2/The+Future+of+Farming+Overcoming+Labour+and+Skills+Shortages.jpg",
+        user=alice
+    ),
+    Expert(
+        username="george_omondi",
+        expertise_field="Agribusiness Marketing",
+        profile_image="https://farmbizafrica.com/wp-content/uploads/2023/05/IMG_7149.jpg", 
+        user=bob
+    ),
+    Expert(
+        username="grace_kiptoo",
+        expertise_field="Agroforestry",
+        profile_image="https://www.farmafrica.org/wp-content/uploads/2024/03/RS21261_20240115_Farm-Africa_KEN_Brian-Ongoro-07_lpr.jpg",
+        user=alice 
+    )
     ]
-
+    
+    db.session.add_all(experts)
+    db.session.commit()
+    
+    print("Creating communities...")
+    communities = [
+    Community(
+        name="Organic Farmers Network", 
+        description="A community of organic farmers sharing best practices, resources, and sustainable farming techniques.", 
+        created_at=utc_now, 
+        image="https://www.scidev.net/global/wp-content/uploads/2019/08/african_farmers_flickr_gates_foundation.jpg", 
+        user_id=alice.id,
+        category="Crops" 
+    ),
+    Community(
+        name="Precision Agriculture Innovators", 
+        description="A group focused on using technology and data analytics to improve farming efficiency and sustainability.", 
+        created_at=utc_now, 
+        image="https://media.licdn.com/dms/image/D5612AQG9PE-6-vKx3g/article-cover_image-shrink_720_1280/0/1704527548857?e=2147483647&v=beta&t=Vd4o5gVwfPSWSK-IWH79N67ggbvroH3bnBs1xlYk2Pg", 
+        user_id=alice.id,
+        category="AgTech" 
+    ),
+    Community(
+        name="AgriTech Startups", 
+        description="A community for entrepreneurs and innovators creating technologies that address challenges in the agricultural sector.", 
+        created_at=utc_now, 
+        image="https://pbs.twimg.com/profile_images/1489450821792141315/btfk7Qsu_400x400.jpg", 
+        user_id=alice.id,
+        category="AgTech" 
+    ),
+    Community(
+        name="Farmers Market Enthusiasts", 
+        description="Connecting local farmers and consumers, encouraging direct-to-market sales to promote fresh, local produce.", 
+        created_at=utc_now, 
+        image="https://cdn.shopify.com/s/files/1/0595/5413/6237/files/Picture-3-3.jpg", 
+        user_id=alice.id,
+        category="Sustainable" 
+    ),
+    Community(
+        name="Agroforestry Pioneers", 
+        description="Promoting agroforestry practices that combine tree planting with crop farming to improve soil health and biodiversity.", 
+        created_at=utc_now, 
+        image="https://www.delta-agro.com/wp-content/uploads/elementor/thumbs/new-holland-q206evzdg35bgrkuwkuy9cjxmq5u4gpgnfrp6v9y5c.jpeg", 
+        user_id=alice.id,
+        category="Sustainble" 
+    )
+    ]
+    
+    
     # Add all data to the session and commit
-    db.session.add_all(users + blogs + experts)
+    db.session.add_all(communities)
     db.session.commit()
 
     print("Seeding done!")

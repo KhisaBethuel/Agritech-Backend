@@ -22,6 +22,7 @@ def create_community():
             description=request.json.get("description"),
             user_id=user_id,
             image=request.json.get("image"), 
+            category = request.json.get("category")
         )
         db.session.add(new_community)
         db.session.commit()
